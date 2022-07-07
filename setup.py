@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pynol',
-    version='0.1',
+    version='0.1.0',
     description='Python Package for Non-Stationary Online Learning',
     packages=find_packages(),
     url='https://github.com/li-lf/PyNOL',
