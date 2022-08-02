@@ -84,16 +84,16 @@ if __name__ == "__main__":
     p.join()
     for i, result in results:
         loss[i], surrogate_loss[i] = result.get()
-    if os.path.exists('../results') is False:
-        os.makedirs('../results')
+    if os.path.exists('applications/online_mdp/results') is False:
+        os.makedirs('applications/online_mdp/results')
     plot(
         loss,
         labels,
-        file_path='../results/infinite_mdp.pdf',
+        file_path='applications/online_mdp/results/infinite_mdp.pdf',
         x_label='Step')
     plot(
         surrogate_loss,
         labels,
-        file_path='../results/infinite_mdp_surr.pdf',
+        file_path='applications/online_mdp/results/infinite_mdp_surr.pdf',
         x_label='Step',
         y_label='Cumulative Surrogate Loss')

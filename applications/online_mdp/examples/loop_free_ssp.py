@@ -68,6 +68,6 @@ if __name__ == "__main__":
     p.join()
     for i, result in results:
         loss_alg[i] = result.get()
-    if os.path.exists('../results') is False:
-        os.makedirs('../results')
-    plot(loss_alg, labels, file_path='../results/loop_free_ssp.pdf')
+    if os.path.exists('applications/online_mdp/results') is False:
+        os.makedirs('applications/online_mdp/results')
+    plot(loss_alg, labels, file_path='applications/online_mdp/results/loop_free_ssp.pdf')

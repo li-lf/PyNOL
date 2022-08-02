@@ -103,7 +103,7 @@ class GridWorld(Domain):
             problem.solve(solver='SCS', max_iters=100)
         if not problem.status.startswith('optimal'):
             raise RuntimeError('Optimal solution is not found.')
-        return x.value
+        return np.maximum(x.value, self.epsilon)
 
     def sample(self, q, loss):
         q = q.reshape(-1, self.num_actions)
