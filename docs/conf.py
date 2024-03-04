@@ -13,7 +13,7 @@
 import os
 import sys
 import sphinx_rtd_theme
-from recommonmark.parser import CommonMarkParser
+# from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -66,7 +66,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
 # Add support of .md.
-source_parsers = {
-    '.md': CommonMarkParser,
-}
+# source_parsers = {
+#     '.md': CommonMarkParser,
+# }
 source_suffix = ['.rst', '.md']
