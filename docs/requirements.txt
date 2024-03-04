@@ -1,4 +1,5 @@
 sphinxcontrib-bibtex
+sphinx-rtd-theme
 numpy
 autograd
 cvxpy
