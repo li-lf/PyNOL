@@ -10,7 +10,9 @@ def plot(loss: np.ndarray,
          title: Optional[str] = None,
          file_path: Optional[str] = None,
          x_label: Optional[str] = 'Iteration',
-         y_label: Optional[str] = 'Cumulative Loss'):
+         y_label: Optional[str] = 'Cumulative Loss',
+         loc: str = 'upper left',
+         scale='linear'):
     """Visualize the results of multiple learners.:
 
     Args:
@@ -21,6 +23,8 @@ def plot(loss: np.ndarray,
         file_path (str, optional): File path to save the results.
         x_lable (str, optional): Label of :math:`x` axis.
         y_lable (str, optional): Label of :math:`y` axis.
+        loc (str, optional): Location of the legend.
+        scale (str, optional): Scale of the :math:`y` axis, 'linear' or 'log'.
     """
     plt.figure()
     matplotlib.rcParams['font.family'] = "sans-serif"
@@ -39,6 +43,8 @@ def plot(loss: np.ndarray,
         loss_mean, loss_std = loss, np.zeros_like(loss)
 
     plt.grid(linestyle=':', linewidth=0.5)
+    if scale == 'log':
+        plt.yscale('log')
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -49,7 +55,7 @@ def plot(loss: np.ndarray,
             loss_mean[i] - loss_std[i],
             loss_mean[i] + loss_std[i],
             alpha=0.15)
-    plt.legend(loc='upper left')
+    plt.legend(loc=loc)
     if file_path is not None:
         plt.savefig(file_path)
     plt.show()

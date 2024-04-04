@@ -1,6 +1,6 @@
 from multiprocessing import Pool
 from typing import Union
-
+import time
 import numpy as np
 
 from pynol.environment.environment import Environment
@@ -20,7 +20,8 @@ def online_learning(T, env: Environment, learner: Union[Base, Model]):
         tuple: tuple contains:
             x (numpy.ndarray): Decisions over :math:`T` rounds. \n
             loss (numpy.ndarray): Losses over :math:`T` rounds. \n
-            surrogate_loss (numpy.ndarray): Surrogate losses over :math:`T` rounds.
+            surrogate_loss (numpy.ndarray): Surrogate losses over :math:`T` rounds. \n
+            tm (numpy.ndarray): Time cost over :math:`T` rounds.
     """
     if hasattr(learner, 'domain'):
         dimension = learner.domain.dimension
@@ -28,9 +29,12 @@ def online_learning(T, env: Environment, learner: Union[Base, Model]):
         dimension = learner.schedule.bases[0].domain.dimension
     x = np.zeros((T, dimension))
     loss, surrogate_loss = np.zeros(T), np.zeros(T)
+    tm = np.zeros(T)
     for t in range(T):
+        start_time = time.time()
         x[t], loss[t], surrogate_loss[t] = learner.opt(env[t])
-    return x, loss, surrogate_loss
+        tm[t] = time.time() - start_time
+    return x, loss, surrogate_loss, tm
 
 
 def multiple_online_learning(T, env: Environment, learners: list, processes=4):
@@ -46,7 +50,8 @@ def multiple_online_learning(T, env: Environment, learners: list, processes=4):
         tuple: tuple contains:
             x (numpy.ndarray): Decisions of all learners over :math:`T` rounds. \n
             loss (numpy.ndarray): Losses of all learners over :math:`T` rounds. \n
-            surrogate_loss (numpy.ndarray): Surrogate losses of all learners over :math:`T` rounds.
+            surrogate_loss (numpy.ndarray): Surrogate losses of all learners over :math:`T` rounds. \n
+            tm (numpy.ndarray): Time cost of all learners over :math:`T` rounds.
     """
     if hasattr(learners[0][0], 'domain'):
         dimension = learners[0][0].domain.dimension
@@ -54,8 +59,8 @@ def multiple_online_learning(T, env: Environment, learners: list, processes=4):
         dimension = learners[0][0].schedule.bases[0].domain.dimension
     num_learners, num_repeat = len(learners), len(learners[0])
     x = np.zeros((num_learners, num_repeat, T, dimension))
-    loss = np.zeros((num_learners, num_repeat, T))
-    surrogate_loss = np.zeros_like(loss)
+    loss, surrogate_loss = np.zeros((num_learners, num_repeat, T)), np.zeros((num_learners, num_repeat, T))
+    tm = np.zeros_like(loss)
     p = Pool(processes=processes)
     results = []
     for i in range(num_learners):
@@ -66,5 +71,5 @@ def multiple_online_learning(T, env: Environment, learners: list, processes=4):
     p.close()
     p.join()
     for i, j, result in results:
-        x[i][j], loss[i][j], surrogate_loss[i][j] = result.get()
-    return x, loss, surrogate_loss
+        x[i][j], loss[i][j], surrogate_loss[i][j], tm[i][j] = result.get()
+    return x, loss, surrogate_loss, tm

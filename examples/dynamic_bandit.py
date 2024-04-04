@@ -1,4 +1,5 @@
-import os
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname((os.path.abspath(__file__))))
 from pynol.environment.domain import Ball
 from pynol.environment.environment import Environment
 from pynol.environment.loss_function import SquareLoss
@@ -52,7 +53,7 @@ labels = ['BGD1', 'BGD2', 'PBGD1', 'PBGD2']
 if __name__ == "__main__":
     loss_func = SquareLoss(feature=feature, label=label, scale=scale)
     env = Environment(func_sequence=loss_func)
-    _, loss, _ = multiple_online_learning(T, env, learners)
+    _, loss, _, _ = multiple_online_learning(T, env, learners)
     if os.path.exists('./results') is False:
         os.makedirs('./results')
     plot(loss, labels, file_path='./results/dynamic_bandit.pdf')

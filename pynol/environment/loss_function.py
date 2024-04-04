@@ -166,3 +166,39 @@ class FuncWithSwitch:
                 x - self.x_last, ord=self.norm, axis=1)**self.order
         self.x_last = x
         return loss
+
+
+class HuberLoss(LossFunction):
+    """This class defines the huber loss function.
+
+    Args:
+        Feature (numpy.ndarray): Features of the environment.
+        label (numpy.ndarray): Labels of the environment.
+        scale (float): Scale coefficient of the loss function.
+
+    Example:
+    ::
+
+        import numpy as np
+        feature, label = np.random.rand(1000, 5), np.random.randint(2, size=1000)
+        func = HuberLoss(feature, label)  # 1000 rounds, 5 dimension
+    """
+    def __init__(self,
+                 feature: np.ndarray = None,
+                 label: np.ndarray = None,
+                 threshold: float = 1.,
+                 scale: float = 1.) -> None:
+        self.feature = feature
+        self.label = label
+        self.threshold = threshold
+        self.scale = scale
+
+    def __getitem__(self, t: int) -> Callable[[np.ndarray], float]:
+        return partial(self.func, t=t)
+
+    def func(self, x, t):
+        prediction = np.dot(self.feature[t], x)
+        if abs(prediction - self.label[t]) < self.threshold:
+            return self.scale * 1 / 2 * (prediction - self.label[t])**2
+        else:
+            return self.scale * (self.threshold * abs(prediction - self.label[t]) - self.threshold**2 / 2)
