@@ -17,7 +17,7 @@ from pynol.learner.models.dynamic.sword import SwordBest
 from pynol.learner.models.dynamic.swordpp import SwordPP
 from pynol.environment.environment import Environment
 from pynol.environment.loss_function import HuberLoss
-from pynol.online_learning import multiple_online_learning
+from pynol.online_learning import online_learning, multiple_online_learning
 from pynol.utils.plot import plot
 
 parser = argparse.ArgumentParser()
@@ -25,7 +25,6 @@ parser.add_argument('--real_world', action='store_true')
 parser.add_argument('--threshold', type=float, default=2.0)
 args = parser.parse_args()
 real_world = args.real_world
-real_world = True
 if real_world is False:
     dataset = 'synAbrupt'
     radius, Gamma = 1., 1.
@@ -66,7 +65,13 @@ time_all = np.zeros_like(loss)
 if __name__ == "__main__":
     loss_func = HuberLoss(feature=X, label=y, threshold=args.threshold)
     env = Environment(func_sequence=loss_func)
-    _, loss, _, tm= multiple_online_learning(T, env, learners)
+    loss = np.zeros((len(learners), len(learners[0]), T))
+    tm = np.zeros_like(loss)
+    for i in range(len(learners)):
+        for j in range(len(learners[i])):
+            _, loss[i, j], _, tm[i, j]= online_learning(T, env, learners[i][j])
+    ### if you only care about the loss, you can uncomment the following lines to use multiple processes to speed up
+    # _, loss, _, _ = multiple_online_learning(T, env, learners)
     if os.path.exists('./results') is False:
         os.makedirs('./results')
     plot(loss, labels, file_path='./results/swordpp_'+ dataset +'_loss.pdf')
